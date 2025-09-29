@@ -71,16 +71,17 @@ module.exports.renderNewForm = (req,res)=>{
 //}
 
 
+const { cloudinary } = require("../cloudConfig.js"); // your cloudinary config
+
+
 module.exports.createListing = async (req, res, next) => {
   try {
-    // 🔹 Use Nominatim (OpenStreetMap) for geocoding
     const locationQuery = req.body.listing.location;
+
+    // 🔹 Nominatim geocoding with proper User-Agent
     const geoRes = await axios.get("https://nominatim.openstreetmap.org/search", {
-      params: {
-        q: locationQuery,
-        format: "json",
-        limit: 1,
-      },
+      params: { q: locationQuery, format: "json", limit: 1 },
+      headers: { "User-Agent": "YourAppNameHere" },
     });
 
     if (!geoRes.data || geoRes.data.length === 0) {
@@ -88,31 +89,37 @@ module.exports.createListing = async (req, res, next) => {
       return res.redirect("/listings/new");
     }
 
-    // Extract lat/lon
     const { lat, lon } = geoRes.data[0];
 
-    let url = req.file.path;
-    let filename = req.file.filename;
+    // 🔹 Upload image to Cloudinary if file exists
+    let imageData = null;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "listings",
+      });
+      imageData = { url: result.secure_url, filename: result.public_id };
+    }
 
     const newListing = new Listing(req.body.listing);
     newListing.owner = req.user._id;
-    newListing.image = { url, filename };
+    if (imageData) newListing.image = imageData;
 
-    // ✅ Replace Mapbox geometry with OSM geometry
     newListing.geometry = {
       type: "Point",
-      coordinates: [parseFloat(lon), parseFloat(lat)], // GeoJSON format
+      coordinates: [parseFloat(lon), parseFloat(lat)],
     };
 
-    savedListing = await newListing.save();
+    await newListing.save();
+
     req.flash("success", "New Listing Created!");
     res.redirect("/listings");
   } catch (err) {
-    console.error(err);
+    console.error("Error creating listing:", err.response?.data || err.message);
     req.flash("error", "Something went wrong while creating the listing.");
     res.redirect("/listings/new");
   }
 };
+
 
 module.exports.renderEditForm = async(req,res)=>{
     let {id} = req.params;
