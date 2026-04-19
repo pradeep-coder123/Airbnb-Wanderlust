@@ -1,0 +1,129 @@
+<style>
+  
+.navbar {
+  background-color: #fff;
+  z-index: 1030;
+  min-height: 56px;
+}
+
+/* Brand icon */
+.fa-compass {
+  color: #fe424d;
+  font-size: 1.75rem;
+}
+
+/* Search input + button */
+.search-inp {
+  border-radius: 25px;
+  padding: 0.45rem 1rem;
+  font-size: 0.95rem;
+  min-width: 200px;
+}
+
+.search-btn {
+  background-color: #fe424d;
+  color: #fff;
+  border-radius: 25px;
+  padding: 0.45rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.search-btn i {
+  margin-right: 0.5rem;
+}
+
+/* Make sure the search form looks good on mobile and desktop */
+@media (max-width: 767.98px) {
+  .search-inp {
+    width: 100%;
+  }
+  .search-btn {
+    width: 100%;
+    margin-top: 0.35rem;
+  }
+
+  /* When collapsed, make collapse area visible and solid */
+  .navbar-collapse {
+    background-color: #fff;
+    position: absolute;
+    top: 56px; /* height of navbar */
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    z-index: 1040;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  }
+
+  /* Improve spacing of collapsed nav links */
+  .navbar-collapse .nav-link {
+    display: block;
+    padding: 0.5rem 0;
+  }
+}
+
+/* For larger screens keep collapse inline and clean */
+@media (min-width: 768px) {
+  .navbar-collapse {
+    background: transparent;
+    position: static;
+    box-shadow: none;
+    padding: 0;
+  }
+}
+
+/* Make sure toggler button visible (if you ever override Bootstrap) */
+.navbar-toggler {
+  border: none;
+}
+
+</style>
+
+
+<nav class="navbar navbar-expand-md navbar-light bg-white border-bottom sticky-top">
+  <div class="container-fluid">
+    <!-- Brand -->
+    <a class="navbar-brand" href="/listings">
+      <i class="fa-solid fa-compass"></i>
+    </a>
+
+    <!-- Burger -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Collapsible Content -->
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+
+      <!-- Left Section -->
+      <div class="navbar-nav me-auto">
+        <a class="nav-link" href="/listings">Explore</a>
+      </div>
+
+      <!-- Search Section (stacks on small screens) -->
+      <form class="d-flex flex-column flex-md-row align-items-stretch my-2 my-md-0">
+        <input class="form-control search-inp mb-2 mb-md-0 me-md-2" type="search" placeholder="Search destination" />
+        <button class="btn search-btn w-100 w-md-auto" type="submit">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span class="d-none d-md-inline"> Search</span>
+        </button>
+      </form>
+
+      <!-- Right Section -->
+      <div class="navbar-nav ms-md-3">
+        <a class="nav-link" href="/listings/new">Airbnb your home</a>
+        <% if(!currUser) { %>
+          <a class="nav-link" href="/signup"><b>Sign up</b></a>
+          <a class="nav-link" href="/login"><b>Log in</b></a>
+        <% } %>
+        <% if(currUser) { %>
+          <a class="nav-link" href="/logout">Log out</a>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+</nav>
